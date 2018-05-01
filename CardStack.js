@@ -38,7 +38,6 @@ export default class CardStack extends Component {
     this.distance = this.constructor.distance;
   }
 
-
   componentWillMount() {
     this._panResponder = PanResponder.create({
       onStartShouldSetPanResponder: (evt, gestureState) => true,
@@ -381,6 +380,10 @@ export default class CardStack extends Component {
       outputRange: this.props.outputRotationRange,
       extrapolate: 'clamp',
     });
+    const opacity = drag.x.interpolate({
+      inputRange: [-1*width,-280,0,280,width],
+      outputRange: [0,1,1,1,0]
+    });
 
     return (
         <View {...this._panResponder.panHandlers} style={[{position:'relative'},this.props.style]}>
@@ -394,6 +397,7 @@ export default class CardStack extends Component {
                     elevation: (topCard === 'cardB') ? 3 : 2,
                   }
                 }),
+                opacity: (topCard === 'cardB') ? opacity : 1,
                 transform: [
                   { rotate: (topCard === 'cardB') ? rotate: '0deg' },
                   {translateX: (topCard === 'cardB') ? drag.x: 0},
@@ -413,6 +417,7 @@ export default class CardStack extends Component {
                     elevation: (topCard === 'cardA') ? 3 : 2,
                   }
                 }),
+                opacity: (topCard === 'cardA') ? opacity : 1,
                 transform: [
                   { rotate: (topCard === 'cardA') ? rotate: '0deg' },
                   {translateX: (topCard === 'cardA') ? drag.x: 0},

@@ -33,6 +33,7 @@ export default class CardStack extends Component {
       topCard: 'cardA',
       cards: [],
       touchStart: 0,
+      slideGesture: false
     };
     this.distance = this.constructor.distance;
   }
@@ -52,6 +53,17 @@ export default class CardStack extends Component {
         const dragDistance = this.distance((horizontalSwipe) ? gestureState.dx : 0, (verticalSwipe) ? gestureState.dy : 0 );
         this.state.dragDistance.setValue(dragDistance);
         this.state.drag.setValue({x: (horizontalSwipe) ? gestureState.dx : 0, y: (verticalSwipe) ? gestureState.dy : 0});
+
+        const onTapCardDeadZone = 5;
+        if (
+            gestureState.dx < -onTapCardDeadZone ||
+            gestureState.dx > onTapCardDeadZone ||
+            gestureState.dy < -onTapCardDeadZone ||
+            gestureState.dy > onTapCardDeadZone
+        ) {
+            this.state.slideGesture = true;
+        }
+
       },
       onPanResponderTerminationRequest: (evt, gestureState) => true,
       onPanResponderRelease: (evt, gestureState) => {
@@ -66,7 +78,6 @@ export default class CardStack extends Component {
                 disableRightSwipe,
                 disableBottomSwipe,
               } = this.props;
-
 
         if (((Math.abs(gestureState.dy) > verticalThreshold)  ||
             ( Math.abs(gestureState.dy) > verticalThreshold*0.8 &&
@@ -111,6 +122,11 @@ export default class CardStack extends Component {
         {
           this._resetCard();
         }
+
+        if (!this.state.slideGesture && swipeDuration < 150 && this.props.onTap != undefined) {
+          this.props.onTap(this.state.sindex-2);
+        }
+        this.setState({ slideGesture: false });
       },
       onPanResponderTerminate: (evt, gestureState) => {
       },
